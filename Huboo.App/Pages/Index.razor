@@ -1,0 +1,62 @@
+﻿@page "/"
+@inject IMediator mediator
+
+<PageTitle>Huboo</PageTitle>
+
+<div class="d-flex flex-column align-items-stretch">
+    <form class="row g-2" @onsubmit=FormSubmitHandler>
+        <div class="col-8">
+            <label class="visually-hidden" for="registration">Vehicle registration</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="registration" placeholder="Vehicle registration"
+                    @bind-value=@registrationValue>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+    @if (vehicles is not null && vehicles.Any())
+    {
+        <table class="table pt-3">
+            <thead>
+                <tr>
+                    <th scope="col">Result #</th>
+                    <th scope="col">Make</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Colour</th>
+                    <th scope="col">MOT Expiry</th>
+                    <th scope="col">MOT Failures</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (vehicle, index) in vehicles.Select((v, i) => (v, i)))
+                {
+                    <tr>
+                        <th scope="row">@(index+1)</th>
+                        <td>@vehicle.Make</td>
+                        <td>@vehicle.Model</td>
+                        <td>@vehicle.Color</td>
+                        <td>@vehicle.MotExpiry.ToString("dd/MM/yyyy")</td>
+                        <td>@vehicle.MotFailures</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (vehicles is not null)
+    {
+        <d class="pt-3">No vehicles were found which match that registration.</d>
+    }
+</div>
+
+@code {
+    private string registrationValue = string.Empty;
+    private IEnumerable<VehicleInfo>? vehicles = null;
+
+    private async Task FormSubmitHandler(EventArgs args)
+    {
+        vehicles = await mediator.Send(new GetVehicleDetails(registrationValue));
+    }
+}
