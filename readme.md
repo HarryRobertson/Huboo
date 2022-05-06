@@ -1,4 +1,5 @@
 Required: .NET 6
+
 Optional: VS 2022
 
 To run the application on the command line call `dotnet run` from the `/Huboo.App` folder.
