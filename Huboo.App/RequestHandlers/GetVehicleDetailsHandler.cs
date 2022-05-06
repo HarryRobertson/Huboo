@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace Huboo.App.RequestHandlers;
 
 internal class GetVehicleDetailsHandler : IRequestHandler<GetVehicleDetails, IEnumerable<VehicleInfo>>
@@ -17,7 +15,9 @@ internal class GetVehicleDetailsHandler : IRequestHandler<GetVehicleDetails, IEn
     {
         try
         {
-            var vehicle = await client.GetVehicleInfo(request.Registration).ConfigureAwait(false);
+            var reg = request.Registration.Trim();
+            reg = Regex.Replace(reg, @"\s+", "");
+            var vehicle = await client.GetVehicleInfo(reg).ConfigureAwait(false);
             var info = vehicle
                 .OrderByDescending(v => v.FirstUsedDate)
                 .AsQueryable()
